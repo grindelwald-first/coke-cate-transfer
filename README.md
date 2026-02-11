@@ -85,6 +85,7 @@ The code can be run locally on a standard desktop machine, though substantially 
 * math
 * pandas
 * scipy
+* scikit-learn
 
 ### R version 4.3.2
 
