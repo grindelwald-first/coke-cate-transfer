@@ -3,7 +3,8 @@
 This repository contains the reproducibility materials accompanying the manuscript  
 **“Transfer Learning of CATE with Kernel Ridge Regression.”**
 
-The repository provides implementations of the proposed method COKE, benchmark methods, simulation studies, real-world data analyses, and scripts for generating the figures reported in the paper.
+The repository includes implementations of the proposed method **COKE**, benchmark methods, simulation studies, and real-world data analyses (401(k) and NHANES). Numerical results and figures reported in the manuscript can be reproduced using the materials provided here.
+
 
 ## Repository Structure
 
@@ -21,7 +22,16 @@ coke-cate-transfer/
 │   ├── changeN.py
 │   ├── changeB_2dim.py
 │   ├── changeB_CF.py
-│   └── simulation_figures.R
+│   ├── simulation_figures.R
+│   └── realexample/
+│       ├── 401k_main_analysis.R
+│       ├── nhanes2001_data_clean.R
+│       ├── nhanes2015_data_clean.R
+│       ├── nhanes_main_analysis.R
+│       └── real_data_main_function.R
+├── data/
+│   ├── 401k/
+│   └── NHANES/
 ├── output/
 │   └── (saved simulation outputs)
 ├── README.md
@@ -31,7 +41,7 @@ coke-cate-transfer/
 
 ## Methods
 
-The following Python scripts implement the proposed method and competing estimators:
+The following Python scripts implement the proposed method and benchmark methods:
 
 * `code/methods/separate_regression.py`: Separate Regression (**SR**).
 * `code/methods/coke.py`: Proposed method **COKE**.
@@ -41,7 +51,7 @@ The following Python scripts implement the proposed method and competing estimat
 Each file contains a self-contained implementation of the corresponding method.
 
 
-## Simulation Scripts
+## Simulation Studies
 
 Simulation studies reported in the paper are driven by the following Python scripts located in `code/`:
 
@@ -52,29 +62,54 @@ Simulation studies reported in the paper are driven by the following Python scri
 * `changeB_2dim.py`: Vary $S_B$ with other parameters fixed under $q = 2$.
 * `changeB_CF.py`: Compare the cross-fitting version of **COKE** with the original Algorithm 3.
 
-Each script imports method implementations from `code/methods/` and generates numerical outputs for the corresponding simulation setting.
+Simulation outputs are saved to the `output/` directory.
+
+### Simulation Figures
+
+* `code/simulation_figures.R` generates Figure 1 and Figure A1 using the saved simulation outputs.
 
 
-## Output
+## Real-World Examples
 
-The `output/` directory contains saved numerical results from all simulation settings.
-These files are used as inputs for figure generation and allow reproduction of the figures without rerunning the full simulation studies.
+Two real-world datasets are analyzed in the manuscript:
 
+### 1. 401(k) Dataset
 
-## Plotting
+* Data located in: `data/401k/`
+* Main analysis script: `code/realexample/401k_main_analysis.R`
 
-* `code/simulation_figures.R`:
-  Generates **Figure 1** and **Figure A1** in the paper using the saved simulation outputs.
+### 2. NHANES Dataset
+
+* Data located in: `data/NHANES/`
+* Data cleaning scripts:
+  * `nhanes2001_data_clean.R`
+  * `nhanes2015_data_clean.R`
+* Main analysis script:
+  * `nhanes_main_analysis.R`
+
+### Real-Data Functions
+
+* `real_data_main_function.R` contains functions implementing the four methods for real-data analyses.
 
 
 ## Reproducibility Workflow
 
-1. Run the simulation scripts in `code/` to generate numerical outputs.
-2. Simulation results are saved to the `output/` directory.
-3. Run `code/simulation_figures.R` to generate the figures reported in the manuscript.
+### A. Reproducing Simulation Results
 
-Due to the computational cost of the simulation studies, the Python scripts were executed using Google Colab.
-The code can be run locally on a standard desktop machine, though substantially longer runtimes should be expected.
+1. Run the simulation scripts in `code/`.
+2. Simulation results will be saved in `output/`.
+3. Run `code/simulation_figures.R` to generate the simulation figures reported in the manuscript.
+
+Due to the computational cost of the simulation studies, these scripts were executed using Google Colab. Running locally may require substantially longer runtimes.
+
+### B. Reproducing Real-World Analyses
+
+1. For NHANES, run the data cleaning scripts:
+   * `code/realexample/nhanes2001_data_clean.R`
+   * `code/realexample/nhanes2015_data_clean.R`
+2. Run the main analysis scripts:
+   * `code/realexample/401k_main_analysis.R`
+   * `code/realexample/nhanes_main_analysis.R`
 
 
 ## Software Requirements and Packages
@@ -93,6 +128,8 @@ The code can be run locally on a standard desktop machine, though substantially 
 * latex2exp
 * gridExtra
 * grid
+* glmnet
+* splines
 
 
 ## License
