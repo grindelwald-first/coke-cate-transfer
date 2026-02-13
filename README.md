@@ -114,7 +114,7 @@ Due to the computational cost of the simulation studies, these scripts were exec
 
 ## Software Requirements and Packages
 
-### Python ≥ 3.9
+### Python 3.9
 
 * numpy
 * math
@@ -130,6 +130,8 @@ Due to the computational cost of the simulation studies, these scripts were exec
 * grid
 * glmnet
 * splines
+* dplyr
+* haven
 
 
 ## License
