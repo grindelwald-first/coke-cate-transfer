@@ -82,14 +82,14 @@ Two real-world datasets are analyzed in the manuscript:
 
 * Data located in: `data/NHANES/`
 * Data cleaning scripts:
-  * `nhanes2001_data_clean.R`
-  * `nhanes2015_data_clean.R`
+  * `code/realexample/nhanes2001_data_clean.R`
+  * `code/realexample/nhanes2015_data_clean.R`
 * Main analysis script:
-  * `nhanes_main_analysis.R`
+  * `code/realexample/nhanes_main_analysis.R`
 
 ### Real-Data Functions
 
-* `real_data_main_function.R` contains functions implementing the four methods for real-data analyses.
+* `code/realexample/real_data_main_function.R` contains functions implementing the four methods for real-data analyses.
 
 
 ## Reproducibility Workflow
