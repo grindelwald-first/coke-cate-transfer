@@ -17,6 +17,7 @@ from separate_regression import separate_regression
 from coke import coke
 from dr_cate import dr_cate
 from acw_cate import acw_cate
+from r_learner import r_learner
 
 # Output path: repo_root/output/changeB_2dim.csv
 REPO_ROOT = THIS_DIR.parent
@@ -38,7 +39,7 @@ sd = 0.5
 sim = 100
 nnew = 10000
 
-B_values = [1, 5, 10, 15, 20]
+B_values = [1, 5, 10, 15, 20, 25]
 
 
 ############################################################
@@ -182,21 +183,29 @@ def main():
             true_cate = np.array([or1(X_new[i, :]) - or0(X_new[i, :]) for i in range(nnew)])
 
             ############################################
-            # 4) Estimate with 4 methods
+            # 4) Estimate with 5 methods
+            #
+            # Important for reproducibility of existing 4 methods:
+            # R-learner is called after SR, COKE, DR, and ACW.
             ############################################
             est_sr_ = separate_regression(S_df, T_df, X_new, Kxx=Kxx, Kxy=Kxy)
             est_coke_ = coke(S_df, T_df, X_new, Kxx=Kxx, Kxy=Kxy)
             est_dr_ = dr_cate(S_df, T_df, X_new, Kxx=Kxx, Kxy=Kxy)
             est_acw_ = acw_cate(S_df, T_df, X_new, Kxx=Kxx, Kxy=Kxy)
 
+            np.random.seed(time_ + 1000)
+            est_r_ = r_learner(S_df, T_df, X_new, Kxx=Kxx, Kxy=Kxy)
+
             mse_sr_val = np.mean((est_sr_ - true_cate) ** 2)
             mse_coke_val = np.mean((est_coke_ - true_cate) ** 2)
             mse_dr_val = np.mean((est_dr_ - true_cate) ** 2)
             mse_acw_val = np.mean((est_acw_ - true_cate) ** 2)
+            mse_r_val = np.mean((est_r_ - true_cate) ** 2)
 
             results_df.loc[len(results_df)] = [B_, R, c_val, "SR", mse_sr_val]
             results_df.loc[len(results_df)] = [B_, R, c_val, "DR", mse_dr_val]
             results_df.loc[len(results_df)] = [B_, R, c_val, "ACW", mse_acw_val]
+            results_df.loc[len(results_df)] = [B_, R, c_val, "RLearner", mse_r_val]
             results_df.loc[len(results_df)] = [B_, R, c_val, "COKE", mse_coke_val]
 
     ############################################################

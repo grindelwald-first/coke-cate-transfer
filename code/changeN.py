@@ -17,6 +17,7 @@ from separate_regression import separate_regression
 from coke import coke
 from dr_cate import dr_cate
 from acw_cate import acw_cate
+from r_learner import r_learner
 
 # Output path: repo_root/output/changeN_seed.csv
 REPO_ROOT = THIS_DIR.parent
@@ -97,6 +98,7 @@ def main():
     mse_coke = np.zeros(sim)
     mse_dr = np.zeros(sim)
     mse_acw = np.zeros(sim)
+    mse_r = np.zeros(sim)
 
     for nt in nt_values:
         ns = nt * 4  # source sample size
@@ -197,14 +199,19 @@ def main():
             est_dr_ = dr_cate(S_df, T_df, X_new, Kxx=Kxx, Kxy=Kxy)
             est_acw_ = acw_cate(S_df, T_df, X_new, Kxx=Kxx, Kxy=Kxy)
 
+            np.random.seed(rep_ + 1000)
+            est_r_ = r_learner(S_df, T_df, X_new, Kxx=Kxx, Kxy=Kxy)
+
             mse_sr[rep_] = np.mean((est_sr_ - true_cate) ** 2)
             mse_coke[rep_] = np.mean((est_coke_ - true_cate) ** 2)
             mse_dr[rep_] = np.mean((est_dr_ - true_cate) ** 2)
             mse_acw[rep_] = np.mean((est_acw_ - true_cate) ** 2)
+            mse_r[rep_] = np.mean((est_r_ - true_cate) ** 2)
 
             results_df.loc[len(results_df)] = [nt, "SR", mse_sr[rep_]]
             results_df.loc[len(results_df)] = [nt, "DR", mse_dr[rep_]]
             results_df.loc[len(results_df)] = [nt, "ACW", mse_acw[rep_]]
+            results_df.loc[len(results_df)] = [nt, "RLearner", mse_r[rep_]]
             results_df.loc[len(results_df)] = [nt, "COKE", mse_coke[rep_]]
 
     ############################################################

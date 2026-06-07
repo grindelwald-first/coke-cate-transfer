@@ -17,6 +17,7 @@ from separate_regression import separate_regression
 from coke import coke
 from dr_cate import dr_cate
 from acw_cate import acw_cate
+from r_learner import r_learner
 
 # Output path: repo_root/output/changeR_seed.csv
 REPO_ROOT = THIS_DIR.parent
@@ -29,13 +30,13 @@ OUT_CSV = OUTPUT_DIR / "changeR_seed.csv"
 # 1) Global parameters
 ############################################################
 B = 10                 # fixed
+R_values = [0, 0.5, 1, 1.5, 2]  # vary R
+c_val = 1              # complexity factor for or0, or1
 d = 4                  # dimension
 beta = 1               # number of covariates with shift
-c_val = 1              # complexity factor for or0, or1
 sd = 0.5               # sd of Y|A,X
 sim = 100              # simulation times
 nnew = 10000           # number of new samples from T for MSE
-R_values = [2, 3, 4, 5]
 
 
 ############################################################
@@ -91,6 +92,7 @@ def main():
     mse_coke = np.zeros(sim)
     mse_dr = np.zeros(sim)
     mse_acw = np.zeros(sim)
+    mse_r = np.zeros(sim)
 
     for R_ in R_values:
         # define nt, ns
@@ -102,6 +104,7 @@ def main():
 
         for rep_ in range(sim):
             np.random.seed(rep_ + 1000)
+            print(f"Current simulation: rep = {rep_}, R = {R_}")
 
             ############################################
             # Generate Source Data (S)
@@ -189,25 +192,33 @@ def main():
             true_cate = np.array([or1(X_new[i, :]) - or0(X_new[i, :]) for i in range(nnew)])
 
             ############################################
-            # Estimate w/ SR, COKE, DR, ACW
+            # Estimate with 5 methods
             ############################################
             est_sr_ = separate_regression(S_df, T_df, X_new, Kxx=Kxx, Kxy=Kxy)
             est_coke_ = coke(S_df, T_df, X_new, Kxx=Kxx, Kxy=Kxy)
             est_dr_ = dr_cate(S_df, T_df, X_new, Kxx=Kxx, Kxy=Kxy)
             est_acw_ = acw_cate(S_df, T_df, X_new, Kxx=Kxx, Kxy=Kxy)
 
+            np.random.seed(rep_ + 1000)
+            est_r_ = r_learner(S_df, T_df, X_new, Kxx=Kxx, Kxy=Kxy)
+
+            ############################################
+            # Compute MSE
+            ############################################
             mse_sr[rep_] = np.mean((est_sr_ - true_cate) ** 2)
             mse_coke[rep_] = np.mean((est_coke_ - true_cate) ** 2)
             mse_dr[rep_] = np.mean((est_dr_ - true_cate) ** 2)
             mse_acw[rep_] = np.mean((est_acw_ - true_cate) ** 2)
+            mse_r[rep_] = np.mean((est_r_ - true_cate) ** 2)
 
             results_df.loc[len(results_df)] = [B, R_, c_val, "SR", mse_sr[rep_]]
             results_df.loc[len(results_df)] = [B, R_, c_val, "DR", mse_dr[rep_]]
             results_df.loc[len(results_df)] = [B, R_, c_val, "ACW", mse_acw[rep_]]
+            results_df.loc[len(results_df)] = [B, R_, c_val, "RLearner", mse_r[rep_]]
             results_df.loc[len(results_df)] = [B, R_, c_val, "COKE", mse_coke[rep_]]
 
     ############################################################
-    # Save Results
+    # 5) Save Results
     ############################################################
     print("Head of results_df:\n", results_df.head(), "\n")
     print("Tail of results_df:\n", results_df.tail(), "\n")

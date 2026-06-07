@@ -15,7 +15,8 @@ coke-cate-transfer/
 │   │   ├── separate_regression.py
 │   │   ├── coke.py
 │   │   ├── dr_cate.py
-│   │   └── acw_cate.py
+│   │   ├── acw_cate.py
+│   │   └── r_learner.py
 │   ├── changeB.py
 │   ├── changeR.py
 │   ├── changeC.py
@@ -47,6 +48,7 @@ The following Python scripts implement the proposed method and benchmark methods
 * `code/methods/coke.py`: Proposed method **COKE**.
 * `code/methods/dr_cate.py`: Doubly Robust learner for CATE (**DR-CATE**).
 * `code/methods/acw_cate.py`: ACW estimator tailored for CATE estimation (**ACW-CATE**).
+* `code/methods/r_learner.py`: R-learner (**R-Learner**).
 
 Each file contains a self-contained implementation of the corresponding method.
 
@@ -89,7 +91,7 @@ Two real-world datasets are analyzed in the manuscript:
 
 ### Real-Data Functions
 
-* `code/realexample/real_data_main_function.R` contains functions implementing the four methods for real-data analyses.
+* `code/realexample/real_data_main_function.R` contains functions implementing the methods for real-data analyses.
 
 
 ## Reproducibility Workflow
@@ -114,27 +116,21 @@ Due to the computational cost of the simulation studies, these scripts were exec
 
 ## Software Requirements and Packages
 
-### Python 3.9
+### Python: 3.12.13
 
-* numpy
-* math
-* pandas
-* scipy
-* scikit-learn
+* numpy: 2.0.2
+* pandas: 2.2.2
+* scipy: 1.16.3
+* scikit-learn: 1.6.1
 
-### R version 4.3.2
+### R: 4.3.2
 
-* tidyverse
-* latex2exp
-* gridExtra
-* grid
-* glmnet
-* splines
-* dplyr
-* haven
-* here
-
-
-## License
-
-This project is released under the MIT License.
+* tidyverse: 2.0.0
+* latex2exp: 0.9.6
+* gridExtra: 2.3
+* grid: 4.3.2
+* glmnet: 4.1.8
+* splines: 4.3.2
+* dplyr: 1.1.4
+* haven: 2.5.4
+* here: 1.0.2

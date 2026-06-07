@@ -13,8 +13,8 @@ df_sc_c = read.csv(here("output", "changeC_seed.csv"), header = TRUE, col.names 
 df_sc = rbind(df_sc_B, df_sc_R, df_sc_c)
 
 df_sc$method = factor(df_sc$method, 
-                       levels = c("ACW", "DR", "SR", "COKE"),
-                       labels = c("ACW-CATE", "DR-CATE", "SR", "COKE"))
+                      levels = c("ACW", "DR", "SR", "RLearner", "COKE"),
+                      labels = c("ACW-CATE", "DR-CATE", "SR", "R-Learner", "COKE"))
 
 c_fix = 1
 R_fix = 2
@@ -37,7 +37,7 @@ p1 = ggplot(df_means, aes(x = as.factor(B), y = mean_r_squared, color = method, 
   geom_hline(yintercept = 0.6, linetype = "dashed", color = "gray") +
   coord_cartesian(ylim = c(0.03, 4.5)) +
   scale_y_continuous(
-    breaks = c(0, 0.2, 0.4,  0.6, 5),
+    breaks = c(0, 0.2, 0.4, 0.6, 5),
     trans = scales::trans_new(
       "compressed_top",
       transform = function(x) ifelse(x > 0.6, (x - 0.6) / 60 + 0.6, x),
@@ -56,7 +56,7 @@ p1
 
 df_filtered = df_sc %>%
   filter(c == c_fix, B == B_fix) %>%
-  filter(R != 5)
+  filter(R %in% c(0,0.5,1,1.5,2))
 
 df_means = df_filtered %>%
   group_by(R, method) %>%
@@ -68,13 +68,13 @@ p2 = ggplot(df_means, aes(x = as.factor(R), y = mean_r_squared, color = method, 
   geom_hline(yintercept = 0.6, linetype = "dashed", color = "gray") +
   ylab("MSE") +
   xlab(TeX("$S_R$ (Degree of Shift b/w Treated & Control)")) +
-  coord_cartesian(ylim = c(0.03, 12)) +
+  coord_cartesian(ylim = c(0.02, 3)) +
   scale_y_continuous(
-    breaks = c(0, 0.2, 0.4,  0.6, 12),
+    breaks = c(0, 0.1, 0.2, 0.3, 0.4, 4),
     trans = scales::trans_new(
       "compressed_top",
-      transform = function(x) ifelse(x > 0.6, (x - 0.6) / 200 + 0.6, x),
-      inverse = function(x) ifelse(x > 0.6, (x - 0.6) * 200 + 0.6, x)
+      transform = function(x) ifelse(x > 0.4, (x - 0.4) / 100 + 0.4, x),
+      inverse = function(x) ifelse(x > 0.4, (x - 0.4) * 100 + 0.4, x)
     )
   ) +
   theme(
@@ -89,7 +89,7 @@ p2
 
 df_filtered = df_sc %>%
   filter(R == R_fix, B == B_fix) %>%
-  filter(c %in% c(0,0.25,0.5,0.75,1, 1.25))
+  filter(c %in% c(0,0.25,0.5,0.75,1))
 
 df_means = df_filtered %>%
   group_by(c, method) %>%
@@ -101,13 +101,13 @@ p3 = ggplot(df_means, aes(x = as.factor(c), y = mean_r_squared, color = method, 
   geom_hline(yintercept = 0.6, linetype = "dashed", color = "gray") +
   ylab("MSE") +
   xlab(TeX("c (Complexity of $f_a^*$ compared to $h^*$)")) +
-  coord_cartesian(ylim = c(0.03, 4)) +
+  coord_cartesian(ylim = c(0.02, 3)) +
   scale_y_continuous(
-    breaks = c(0, 0.2, 0.4,  0.6, 4),
+    breaks = c(0, 0.1, 0.2, 0.3, 0.4, 3.5),
     trans = scales::trans_new(
       "compressed_top",
-      transform = function(x) ifelse(x > 0.6, (x - 0.6) / 50 + 0.6, x),
-      inverse = function(x) ifelse(x > 0.6, (x - 0.6) * 50 + 0.6, x)
+      transform = function(x) ifelse(x > 0.4, (x - 0.4) / 50 + 0.4, x),
+      inverse = function(x) ifelse(x > 0.4, (x - 0.4) * 50 + 0.4, x)
     )
   ) +
   theme(
@@ -123,8 +123,8 @@ p3
 df_sc = read.csv(here("output", "changeB_2dim.csv"), header = TRUE, col.names = c("B", "R", "c", "method", "R.squared"))
 
 df_sc$method = factor(df_sc$method, 
-                       levels = c("ACW", "DR", "SR", "COKE"),
-                       labels = c("ACW-CATE", "DR-CATE", "SR", "COKE"))
+                      levels = c("ACW", "DR", "SR", "RLearner", "COKE"),
+                      labels = c("ACW-CATE", "DR-CATE", "SR", "R-Learner", "COKE"))
 
 c_fix = 1
 R_fix = 2
@@ -145,7 +145,7 @@ p4 = ggplot(df_means, aes(x = as.factor(B), y = mean_r_squared, color = method, 
   xlab(TeX("$S_B$ (for 2-dimensional CATE)")) +
   coord_cartesian(ylim = c(0.015, 1.2)) +
   scale_y_continuous(
-    breaks = c(0, 0.1, 0.2,  0.3, 1.2),
+    breaks = c(0, 0.1, 0.2, 0.3, 1.2),
     trans = scales::trans_new(
       "compressed_top",
       transform = function(x) ifelse(x > 0.3, (x - 0.3) / 20 + 0.3, x),
@@ -165,8 +165,8 @@ p4
 df_sc = read.csv(here("output", "changeN_seed.csv"), header = TRUE, col.names = c("nt", "method", "R.squared"))
 
 df_sc$method = factor(df_sc$method, 
-                       levels = c("ACW", "DR", "SR", "COKE"),
-                       labels = c("ACW-CATE", "DR-CATE", "SR", "COKE"))
+                      levels = c("ACW", "DR", "SR", "RLearner", "COKE"),
+                      labels = c("ACW-CATE", "DR-CATE", "SR", "R-Learner", "COKE"))
 
 df_filtered = df_sc
 
@@ -182,7 +182,7 @@ p5 = ggplot(df_means, aes(x = as.factor(nt), y = mean_r_squared, color = method,
   xlab("n_T (= n_S/4)") +
   coord_cartesian(ylim = c(0.03, 9)) +
   scale_y_continuous(
-    breaks = c(0, 0.2, 0.4,  0.6, 9),
+    breaks = c(0, 0.2, 0.4, 0.6, 9),
     trans = scales::trans_new(
       "compressed_top",
       transform = function(x) ifelse(x > 0.6, (x - 0.6) / 100 + 0.6, x),
@@ -198,16 +198,6 @@ p5 = ggplot(df_means, aes(x = as.factor(nt), y = mean_r_squared, color = method,
 p5
 
 # Combine p1–p5 into a 2+2+1 layout
-
-grid.arrange(
-  p1, p2,
-  nullGrob(),
-  p3, p4,
-  nullGrob(),
-  p5,
-  nrow = 5,
-  heights = c(1, 0.1, 1, 0.1, 1)
-)
 
 grid.arrange(
   p1, p2,
