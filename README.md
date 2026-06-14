@@ -149,11 +149,11 @@ The NHANES main analysis script is:
 code/realexample/nhanes_main_analysis.R
 ```
 
-### Real-Data Functions and Figures
+### Real-Data Functions, Figures and Tables
 
 * `code/realexample/real_data_main_function.R` contains functions implementing the methods for real-data analyses.
-* `code/realexample/401k_main_analysis.R` runs the 401(k) real-data analysis.
-* `code/realexample/nhanes_main_analysis.R` runs the NHANES real-data analysis.
+* `code/realexample/401k_main_analysis.R` runs the 401(k) real-data analysis. Table S4 is obtained from `colMeans(tab)` and `colMeans(tab_se)`.
+* `code/realexample/nhanes_main_analysis.R` runs the NHANES real-data analysis. Table S3 is obtained from `colMeans(tab)` and `colMeans(tab_se)`.
 * `code/realexample/realdata_figures.R` generates the real-data density-ratio plots reported as Figure S2 and Figure S3.
 
 ## Data Redistribution
