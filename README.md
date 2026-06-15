@@ -215,4 +215,6 @@ To reproduce the real-data density-ratio plots, run: `code/realexample/realdata_
 * dplyr: 1.1.4
 * haven: 2.5.4
 * here: 1.0.2
-* hdm: **record the installed version used for the 401(k) data source**
+* ggplot2: 3.5.2
+* ranger: 0.17.0
+* hdm: 0.3.2

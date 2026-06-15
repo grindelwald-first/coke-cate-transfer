@@ -1,5 +1,10 @@
 library(tidyverse)
 library(here)
+library(haven)
+library(ggplot2)
+library(ranger)
+
+### 1. 401(k)
 
 load(here("data", "401k", "401k_data.rda"))
 
@@ -66,12 +71,11 @@ weights <- source_sample$density_ratio
 ess <- (sum(weights)^2) / sum(weights^2)
 ess
 
-
-
 rm(list = ls())
 
-library(haven)
-library(ggplot2)
+
+
+### 2. NHANES
 
 read_xpt_any <- function(folder, filename_no_ext) {
   candidates <- file.path(
@@ -80,14 +84,11 @@ read_xpt_any <- function(folder, filename_no_ext) {
       paste0(filename_no_ext, ".XPT"))
   )
   path <- candidates[file.exists(candidates)][1]
-  if (is.na(path)) {
-    stop("Cannot find file: ", filename_no_ext, ".xpt or .XPT in ", folder)
-  }
   read_xpt(path)
 }
 
-source_dir <- file.path("..", "..", "data", "NHANES", "2001")
-target_dir <- file.path("..", "..", "data", "NHANES", "2015")
+source_dir <- here("data", "NHANES", "2001")
+target_dir <- here("data", "NHANES", "2015")
 
 df  <- read_xpt_any(target_dir, "DEMO_I")
 df2 <- read_xpt_any(target_dir, "BMX_I")
@@ -137,7 +138,6 @@ data_T <- data_T[
 
 data_T$MeanSY <- (data_T$SY1 + data_T$SY2 + data_T$SY3) / 3
 
-
 # Clean NHANES 2001 data: source data
 df  <- read_xpt_any(source_dir, "DEMO_B")
 df2 <- read_xpt_any(source_dir, "BMX_B")
@@ -180,14 +180,14 @@ data_S$smoke <- ifelse(is.na(data_S$smoke), 0, 1)
 data_T <- data_T[complete.cases(data_T), ]
 data_S <- data_S[complete.cases(data_S), ]
 
-# Ti = 1 if fat / total energy > 0.4 / 9.
+# Ti = 1 if fat / total energy > 0.4 / 9
 data_T$Ti <- ifelse((data_T$fat1 / data_T$energy1) > (0.4 / 9), 1, 0)
 data_S$Ti <- ifelse((data_S$fat1 / data_S$energy1) > (0.4 / 9), 1, 0)
 
 data_T$fat1 <- NULL
 data_S$fat1 <- NULL
 
-# Log-transform dietary variables.
+# Log-transform dietary variables
 data_T$energy1  <- log(data_T$energy1 + 1)
 data_S$energy1  <- log(data_S$energy1 + 1)
 data_T$alcohol1 <- log(data_T$alcohol1 + 1)
@@ -195,7 +195,7 @@ data_S$alcohol1 <- log(data_S$alcohol1 + 1)
 data_T$sugar1   <- log(data_T$sugar1 + 1)
 data_S$sugar1   <- log(data_S$sugar1 + 1)
 
-# Standardization and rescaling.
+# Standardization and rescaling
 data_S$age <- data_S$age / 10
 data_T$age <- data_T$age / 10
 data_S$education <- data_S$education / 5
@@ -207,7 +207,6 @@ data_T$energy1 <- data_T$energy1 / sd(data_T$energy1)
 data_S$alcohol1 <- data_S$alcohol1 / sd(data_T$alcohol1)
 data_T$alcohol1 <- data_T$alcohol1 / sd(data_T$alcohol1)
 
-# COKE variables used in the repo
 var_X <- c("sex", "age", "smoke", "education", "alcohol1")
 
 Y_S <- data_S$MeanSY
@@ -218,68 +217,92 @@ Y_T <- data_T$MeanSY
 A_T <- data_T$Ti
 X_T <- as.matrix(data_T[, var_X])
 
-cat("nS =", nrow(X_S), "\n")
-cat("nT =", nrow(X_T), "\n")
-
-cat("Source treatment table:\n")
-print(table(A_S))
-
-cat("Target treatment table:\n")
-print(table(A_T))
-
 # Density-ratio plot: target 2015 vs source 2001
 X_combined <- rbind(X_S, X_T)
 
 nS <- nrow(X_S)
 nT <- nrow(X_T)
 
-# label = 0: source, NHANES 2001
-# label = 1: target, NHANES 2015
 labels <- c(rep(0, nS), rep(1, nT))
 
 data_combined <- as.data.frame(X_combined)
 data_combined$label <- labels
+# Treat binary variables as factors in the density-ratio model.
+data_combined$sex_f <- factor(data_combined$sex)
+data_combined$smoke_f <- factor(data_combined$smoke)
 
-# Logistic regression for P(Target | X)
-logistic_model <- glm(
-  label ~ .,
-  data = data_combined,
-  family = binomial()
+# random forest
+set.seed(123)
+make_folds <- function(n, K = 2) {
+  sample(rep(1:K, length.out = n))
+}
+
+estimate_dr_rf_crossfit <- function(X_S, X_T, K = 2, num.trees = 500,
+                                    min.node.size = 20, truncate_at = Inf) {
+  nS <- nrow(X_S)
+  nT <- nrow(X_T)
+  
+  dat <- rbind(
+    data.frame(X_S, label = 0, source = "Source: NHANES 2001"),
+    data.frame(X_T, label = 1, source = "Target: NHANES 2015")
+  )
+  
+  dat$sex <- factor(dat$sex)
+  dat$smoke <- factor(dat$smoke)
+  
+  fold_S <- make_folds(nS, K)
+  fold_T <- make_folds(nT, K)
+  
+  fold <- c(fold_S, fold_T)
+  
+  p_hat <- rep(NA, nrow(dat))
+  
+  for (k in 1:K) {
+    train_id <- which(fold != k)
+    test_id  <- which(fold == k)
+    
+    train_dat <- dat[train_id, ]
+    test_dat  <- dat[test_id, ]
+    
+    fit <- ranger(
+      factor(label) ~ sex + age + smoke + education + alcohol1,
+      data = train_dat,
+      probability = TRUE,
+      num.trees = num.trees,
+      min.node.size = min.node.size
+    )
+    
+    pred <- predict(fit, data = test_dat)$predictions[, "1"]
+    p_hat[test_id] <- pred
+  }
+  
+  p_hat <- pmin(pmax(p_hat, 1e-6), 1 - 1e-6)
+  
+  dat$p_hat <- p_hat
+  dat$density_ratio <- (nS / nT) * p_hat / (1 - p_hat)
+  
+  if (is.finite(truncate_at)) {
+    dat$density_ratio <- pmin(dat$density_ratio, truncate_at)
+  }
+  
+  return(dat)
+}
+
+dr_rf_cf <- estimate_dr_rf_crossfit(
+  X_S = as.data.frame(X_S),
+  X_T = as.data.frame(X_T),
+  K = 2,
+  num.trees = 500,
+  min.node.size = 20,
+  truncate_at = Inf
 )
 
-data_combined$p_hat <- predict(
-  logistic_model,
-  newdata = data_combined,
-  type = "response"
-)
-
-# Estimate density ratio f_T(x) / f_S(x)
-data_combined$density_ratio <-
-  (nS / nT) * data_combined$p_hat / (1 - data_combined$p_hat)
-
-data_combined$source <- ifelse(
-  data_combined$label == 0,
-  "Source: NHANES 2001",
-  "Target: NHANES 2015"
-)
-
-# Effective sample size for source reweighting
-source_sample <- subset(data_combined, label == 0)
-weights <- source_sample$density_ratio
-
-ess <- (sum(weights)^2) / sum(weights^2)
-
-cat("Source sample size nS =", nS, "\n")
-cat("Effective sample size ESS =", ess, "\n")
-cat("ESS / nS =", ess / nS, "\n")
-
-# Plot
-p <- ggplot(data_combined, aes(x = density_ratio, fill = source)) +
+p_rf_cf <- ggplot(dr_rf_cf, aes(x = density_ratio, fill = source)) +
   geom_histogram(
     position = "identity",
     aes(y = after_stat(density)),
     alpha = 0.6,
-    bins = 30,
+    binwidth = 0.07,
     color = "black"
   ) +
   scale_x_log10() +
@@ -297,4 +320,14 @@ p <- ggplot(data_combined, aes(x = density_ratio, fill = source)) +
     legend.position = "bottom"
   )
 
-print(p)
+print(p_rf_cf)
+
+# effective sample size
+source_sample <- subset(dr_rf_cf, label == 0)
+weights <- source_sample$density_ratio
+
+ess <- (sum(weights)^2) / sum(weights^2)
+
+cat("Source sample size nS =", nrow(source_sample), "\n")
+cat("Effective sample size ESS =", ess, "\n")
+cat("ESS / nS =", ess / nrow(source_sample), "\n")
