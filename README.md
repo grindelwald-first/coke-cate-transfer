@@ -149,6 +149,36 @@ The NHANES main analysis script is:
 code/realexample/nhanes_main_analysis.R
 ```
 
+In the NHANES analysis:
+
+* Source sample: NHANES 2001--2002
+* Target sample: NHANES 2015--2016
+* Outcome: `MeanSY`, the average of three systolic blood pressure measurements
+* Treatment: `Ti = 1{fat1 / energy1 > 0.4 / 9}`
+* Covariates: `sex`, `age`, `smoke`, `education`, `alcohol1`
+
+The NHANES variables used in the analysis are:
+
+| Analysis variable | Raw variable in 2001--2002           | Raw variable in 2015--2016           | Codebook/file          |
+| ----------------- | ------------------------------------ | ------------------------------------ | ---------------------- |
+| `sex`             | `RIAGENDR`                           | `RIAGENDR`                           | `DEMO_B`, `DEMO_I`     |
+| `age`             | `RIDAGEYR`                           | `RIDAGEYR`                           | `DEMO_B`, `DEMO_I`     |
+| `race`            | `RIDRETH1`                           | `RIDRETH3`                           | `DEMO_B`, `DEMO_I`     |
+| `education`       | `DMDEDUC2`                           | `DMDEDUC2`                           | `DEMO_B`, `DEMO_I`     |
+| `bmi`             | `BMXBMI`                             | `BMXBMI`                             | `BMX_B`, `BMX_I`       |
+| `smoke`           | `SMQ040`                             | `SMQ040`                             | `SMQ_B`, `SMQ_I`       |
+| `SY1`             | `BPXSY1`                             | `BPXSY1`                             | `BPX_B`, `BPX_I`       |
+| `SY2`             | `BPXSY2`                             | `BPXSY2`                             | `BPX_B`, `BPX_I`       |
+| `SY3`             | `BPXSY3`                             | `BPXSY3`                             | `BPX_B`, `BPX_I`       |
+| `MeanSY`          | constructed from `SY1`, `SY2`, `SY3` | constructed from `SY1`, `SY2`, `SY3` | constructed outcome    |
+| `fat1`            | `DRXTTFAT`                           | `DR1TTFAT`                           | `DRXTOT_B`, `DR1TOT_I` |
+| `energy1`         | `DRXTKCAL`                           | `DR1TKCAL`                           | `DRXTOT_B`, `DR1TOT_I` |
+| `sugar1`          | `DRXTSUGR`                           | `DR1TSUGR`                           | `DRXTOT_B`, `DR1TOT_I` |
+| `protein1`        | `DRXTPROT`                           | `DR1TPROT`                           | `DRXTOT_B`, `DR1TOT_I` |
+| `alcohol1`        | `DRXTALCO`                           | `DR1TALCO`                           | `DRXTOT_B`, `DR1TOT_I` |
+| `fat2`            | not used                             | `DR2TTFAT`                           | `DR2TOT_I`             |
+| `Ti`              | constructed from `fat1 / energy1`    | constructed from `fat1 / energy1`    | constructed treatment  |
+
 ### Real-Data Functions, Figures and Tables
 
 * `code/realexample/real_data_main_function.R` contains functions implementing the methods for real-data analyses.

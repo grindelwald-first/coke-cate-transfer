@@ -43,7 +43,8 @@ data_combined$density_ratio <- nS*data_combined$p_hat / (1 - data_combined$p_hat
 
 data_combined$source <- ifelse(data_combined$label == 0, "Source", "Target")
 
-# Plot histograms of the density ratio for source and target with log10 x-axis
+### Figure S2: density-ratio plot for the 401(k) study
+
 ggplot(data_combined, aes(x = density_ratio, fill = source)) +
   geom_histogram(position = "identity", aes(y = after_stat(density)), alpha = 0.6, bins = 30, color = "black") +
   scale_x_log10() +  # Apply log10 transformation to the x-axis
@@ -296,6 +297,8 @@ dr_rf_cf <- estimate_dr_rf_crossfit(
   min.node.size = 20,
   truncate_at = Inf
 )
+
+### Figure S3: density-ratio plot in the NHANES study
 
 p_rf_cf <- ggplot(dr_rf_cf, aes(x = density_ratio, fill = source)) +
   geom_histogram(

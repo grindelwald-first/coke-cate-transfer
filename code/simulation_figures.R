@@ -211,7 +211,7 @@ grid.arrange(
 
 
 
-### Figure A1
+### Figure S1
 
 # changeB_CF (compare the cross-fitting version of COKE with the original Algorithm 3)
 
