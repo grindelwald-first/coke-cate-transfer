@@ -1,7 +1,3 @@
-############################################################
-####### Main function for running the methods in R ########
-############################################################
-
 TL_CATE <- function(X_S, A_S, Y_S, X_T, rho = 5){
   
   #----------------------
@@ -79,7 +75,7 @@ TL_CATE <- function(X_S, A_S, Y_S, X_T, rho = 5){
   est_mu1_new = ((Y1or1 %*% solve(Kmat1or1 + n1or1 * bestlambda_mu1 * diag(n1or1))) %*% Kxy(X1or1, X_new))[,]
   est_mu0_new = ((Y1or0 %*% solve(Kmat1or0 + n1or0 * bestlambda_mu0 * diag(n1or0))) %*% Kxy(X1or0, X_new))[,]
   est_sr = est_mu1_new - est_mu0_new
-
+  
   
   ## (Methods with cross-fitting:)
   ## 2. RA-Learner (proposed method)
@@ -339,10 +335,110 @@ TL_CATE <- function(X_S, A_S, Y_S, X_T, rho = 5){
   est_dr = Reduce("+", est_dr_list) / length(est_dr_list)
   est_acw = Reduce("+", est_acw_list) / length(est_acw_list)  
   
-  return(list(COKE = est_coke, DR = est_dr, SR = est_sr, ACW = est_acw,
-              COKE1 = est_coke_list[[1]], DR1 = est_dr_list[[1]], SR1 = est_sr, ACW1 = est_acw_list[[1]]))
+  ## 5. R-Learner (benchmark)
+  est_rl_list = list()
+  eps = 1e-3
+  variables = paste0("x", 1:d, collapse = " + ")
+  
+  for (i in seq_along(perms)) {
+    perm = perms[[i]]
+    
+    # 1) Nuisance estimation on S_nc
+    S_nc = S_split[[perm[1]]]
+    
+    # Internal split for selecting lambda for m(x) = E[Y | X]
+    partS_nc = sample(1:nrow(S_nc), ceiling(nrow(S_nc) / 2))
+    S_nc1 = S_nc[partS_nc, ]
+    S_nc2 = S_nc[-partS_nc, ]
+    
+    X_nc1 = as.matrix(S_nc1[, 1:d])
+    Y_nc1 = S_nc1$y
+    X_nc2 = as.matrix(S_nc2[, 1:d])
+    Y_nc2 = S_nc2$y
+    
+    K_nc1 = Kxx(X_nc1)
+    n_train_m = nrow(X_nc1)
+    
+    sse_m_lambdas = sapply(lambdas, function(lambda) {
+      coef_m = solve(K_nc1 + n_train_m * lambda * diag(n_train_m), Y_nc1)
+      pred_m = as.numeric(coef_m %*% Kxy(X_nc1, X_nc2))
+      sum((pred_m - Y_nc2)^2)
+    })
+    bestlambda_m = lambdas[which.min(sse_m_lambdas)]
+    
+    # Fit m(x) on the nuisance fold
+    X_nc = as.matrix(S_nc[, 1:d])
+    Y_nc = S_nc$y
+    K_nc = Kxx(X_nc)
+    coef_m_full = solve(
+      K_nc + nrow(X_nc) * bestlambda_m * diag(nrow(X_nc)),
+      Y_nc
+    )
+    
+    # Fit propensity score e(x) = P(A = 1 | X) on the nuisance fold
+    formula = as.formula(paste("a ~", variables))
+    model_ps = glm(formula, data = S_nc, family = binomial)
+    
+    # 2) Target-parameter fold, split into training/validation
+    S_tg = S_split[[perm[2]]]
+    partS_tg = sample(1:nrow(S_tg), ceiling(nrow(S_tg) / 2))
+    S_tg1 = S_tg[partS_tg, ]
+    S_tg2 = S_tg[-partS_tg, ]
+    
+    X_tg1 = as.matrix(S_tg1[, 1:d])
+    X_tg2 = as.matrix(S_tg2[, 1:d])
+    A_tg1 = S_tg1$a
+    A_tg2 = S_tg2$a
+    Y_tg1 = S_tg1$y
+    Y_tg2 = S_tg2$y
+    
+    # Residuals on training part
+    mhat_tg1 = as.numeric(coef_m_full %*% Kxy(X_nc, X_tg1))
+    pihat_tg1 = predict(model_ps, newdata = S_tg1, type = "response")
+    pihat_tg1 = pmin(pmax(pihat_tg1, eps), 1 - eps)
+    yres_tg1 = Y_tg1 - mhat_tg1
+    ares_tg1 = A_tg1 - pihat_tg1
+    
+    # Residuals on validation part
+    mhat_tg2 = as.numeric(coef_m_full %*% Kxy(X_nc, X_tg2))
+    pihat_tg2 = predict(model_ps, newdata = S_tg2, type = "response")
+    pihat_tg2 = pmin(pmax(pihat_tg2, eps), 1 - eps)
+    yres_tg2 = Y_tg2 - mhat_tg2
+    ares_tg2 = A_tg2 - pihat_tg2
+    
+    # 3) Fit tau(x) by KRR under the R-loss
+    Kmat_tg1 = Kxx(X_tg1)
+    D_tg1 = diag(as.numeric(ares_tg1^2), nrow = length(ares_tg1), ncol = length(ares_tg1))
+    rhs_tg1 = as.numeric(ares_tg1 * yres_tg1)
+    
+    rloss_lambdas = sapply(lambdas, function(lambda) {
+      coef_tau = solve(
+        D_tg1 %*% Kmat_tg1 + nrow(X_tg1) * lambda * diag(nrow(X_tg1)),
+        rhs_tg1
+      )
+      pred_tau_tg2 = as.numeric(coef_tau %*% Kxy(X_tg1, X_tg2))
+      sum((yres_tg2 - ares_tg2 * pred_tau_tg2)^2)
+    })
+    bestlambda_tau = lambdas[which.min(rloss_lambdas)]
+    
+    # Final prediction on X_new
+    coef_tau_best = solve(
+      D_tg1 %*% Kmat_tg1 + nrow(X_tg1) * bestlambda_tau * diag(nrow(X_tg1)),
+      rhs_tg1
+    )
+    est_rl_list[[i]] = as.numeric(coef_tau_best %*% Kxy(X_tg1, X_new))
+  }
+  
+  est_rl = Reduce("+", est_rl_list) / length(est_rl_list)  
+  
+  return(list(COKE = est_coke, DR = est_dr, SR = est_sr, ACW = est_acw, RLearner = est_rl,
+              COKE1 = est_coke_list[[1]], DR1 = est_dr_list[[1]], SR1 = est_sr, ACW1 = est_acw_list[[1]],
+              RLearner1 = est_rl_list[[1]]))
   
 }
+
+
+
 
 #################################
 ####### Kernel functuon ########
@@ -395,7 +491,3 @@ bootstrap_corr_se <- function(x, y, B = 1000, method = "pearson", seed = NULL) {
   se <- sd(boot_cor, na.rm = TRUE)
   return(se)
 }
-
-
-
-

@@ -89,7 +89,6 @@ The data file used in this repository corresponds to the following 12-variable s
 
 The subsequent preprocessing, source/target split, and variable selection are implemented in: `code/realexample/401k_main_analysis.R`.
 
-The saved `data/401k/401k_data.rda` may have a different row order from the `hdm::pension` subset. The analysis is unaffected because the real-data analysis does not rely on the original row ordering.
 
 ### 2. NHANES Dataset
 
@@ -182,9 +181,10 @@ The NHANES variables used in the analysis are:
 ### Real-Data Functions, Figures and Tables
 
 * `code/realexample/real_data_main_function.R` contains functions implementing the methods for real-data analyses.
-* `code/realexample/401k_main_analysis.R` runs the 401(k) real-data analysis. Table S4 is obtained from `colMeans(tab)` and `colMeans(tab_se)`.
-* `code/realexample/nhanes_main_analysis.R` runs the NHANES real-data analysis. Table S3 is obtained from `colMeans(tab)` and `colMeans(tab_se)`.
-* `code/realexample/realdata_figures.R` generates the real-data density-ratio plots reported as Figure S2 and Figure S3.
+* `code/realexample/401k_main_analysis.R` runs the 401(k) real-data analysis and computes the results reported in Table 2, Table S3, and Figure S3. In this script, `tab` stores the Pearson and Spearman correlations over repeated runs, and `tab_se` stores the corresponding bootstrap standard errors. The reported table entries are obtained from `colMeans(tab)` and `colMeans(tab_se)`.
+* `code/realexample/nhanes_main_analysis.R` runs the NHANES real-data analysis and computes the results reported in Table 1, Table S4, and Figure S5. In this script, `tab` stores the Pearson and Spearman correlations over repeated runs, and `tab_se` stores the corresponding bootstrap standard errors. The reported table entries are obtained from `colMeans(tab)` and `colMeans(tab_se)`.
+* `code/realexample/realdata_figures.R` generates the real-data density-ratio plots reported as Figure S2 and Figure S4.
+
 
 ## Data Redistribution
 
@@ -246,6 +246,7 @@ To reproduce the real-data density-ratio plots, run: `code/realexample/realdata_
 * haven: 2.5.4
 * here: 1.0.2
 * ggplot2: 3.5.2
+* patchwork: 1.3.2
 * ranger: 0.17.0
 * proxy: 0.4.27
 * hdm: 0.3.2
