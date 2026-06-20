@@ -166,7 +166,7 @@ colMeans(tab_se)
 
 
 
-##### Scatter plots for the empirical gold standard CATE vs COKE (Figure S4) #####
+##### Scatter plots for the empirical gold standard CATE vs COKE (Figure S5) #####
 
 library(ggplot2)
 library(patchwork)

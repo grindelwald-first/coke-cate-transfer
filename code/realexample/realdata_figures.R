@@ -298,7 +298,7 @@ dr_rf_cf <- estimate_dr_rf_crossfit(
   truncate_at = Inf
 )
 
-### Figure S3: density-ratio plot in the NHANES study
+### Figure S4: density-ratio plot in the NHANES study
 
 p_rf_cf <- ggplot(dr_rf_cf, aes(x = density_ratio, fill = source)) +
   geom_histogram(
