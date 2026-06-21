@@ -241,3 +241,4 @@ To reproduce the real-data density-ratio plots, run: `code/realexample/realdata_
 * ranger: 0.17.0
 * proxy: 0.4.27
 * hdm: 0.3.2
+* scales: 1.4.0
