@@ -92,48 +92,49 @@ The subsequent preprocessing, source/target split, and variable selection are im
 
 ### 2. NHANES Dataset
 
+
+### 2. NHANES Dataset
+
 The NHANES analysis uses NHANES 2001--2002 as the source sample and NHANES 2015--2016 as the target sample.
 
-The official CDC NHANES website is: https://wwwn.cdc.gov/nchs/nhanes/Default.aspx
+The NHANES public-use XPT files used in the analysis are included in this repository under:
 
-#### NHANES 2001--2002 Source Sample
-
-Download the following files from the CDC NHANES 2001--2002 pages and place them in:
 ```text
 data/NHANES/2001/
-```
-
-Required files:
-
-| File           | Component                      | CDC page                                                                                         | Direct documentation link                                                | Direct data link                                                         |
-| -------------- | ------------------------------ | ------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------ | ------------------------------------------------------------------------ |
-| `DEMO_B.XPT`   | Demographics                   | https://wwwn.cdc.gov/nchs/nhanes/search/datapage.aspx?Component=Demographics&CycleBeginYear=2001 | https://wwwn.cdc.gov/Nchs/Data/Nhanes/Public/2001/DataFiles/DEMO_B.htm   | https://wwwn.cdc.gov/Nchs/Data/Nhanes/Public/2001/DataFiles/DEMO_B.XPT   |
-| `BMX_B.XPT`    | Body Measures                  | https://wwwn.cdc.gov/nchs/nhanes/search/datapage.aspx?Component=Examination&CycleBeginYear=2001  | https://wwwn.cdc.gov/Nchs/Data/Nhanes/Public/2001/DataFiles/BMX_B.htm    | https://wwwn.cdc.gov/Nchs/Data/Nhanes/Public/2001/DataFiles/BMX_B.XPT    |
-| `BPX_B.XPT`    | Blood Pressure                 | https://wwwn.cdc.gov/nchs/nhanes/search/datapage.aspx?Component=Examination&CycleBeginYear=2001  | https://wwwn.cdc.gov/Nchs/Data/Nhanes/Public/2001/DataFiles/BPX_B.htm    | https://wwwn.cdc.gov/Nchs/Data/Nhanes/Public/2001/DataFiles/BPX_B.XPT    |
-| `DRXTOT_B.XPT` | Dietary Total Nutrient Intakes | https://wwwn.cdc.gov/nchs/nhanes/search/datapage.aspx?Component=Dietary&CycleBeginYear=2001      | https://wwwn.cdc.gov/Nchs/Data/Nhanes/Public/2001/DataFiles/DRXTOT_B.htm | https://wwwn.cdc.gov/Nchs/Data/Nhanes/Public/2001/DataFiles/DRXTOT_B.XPT |
-| `SMQ_B.XPT`    | Smoking Questionnaire          | https://wwwn.cdc.gov/nchs/nhanes/search/datapage.aspx?Component=Questionnaire&Cycle=2001-2002    | https://wwwn.cdc.gov/Nchs/Data/Nhanes/Public/2001/DataFiles/SMQ_B.htm    | https://wwwn.cdc.gov/Nchs/Data/Nhanes/Public/2001/DataFiles/SMQ_B.XPT    |
-
-On each CDC page, click the corresponding `Doc` link for the codebook and the `Data [XPT]` link for the raw data file.
-
-#### NHANES 2015--2016 Target Sample
-
-Download the following files from the CDC NHANES 2015--2016 pages and place them in:
-```text
 data/NHANES/2015/
 ```
 
-Required files:
+We also provide the official CDC NHANES links below so that users can access the corresponding documentation and download the original data files directly from CDC. The official CDC NHANES website is: https://wwwn.cdc.gov/nchs/nhanes/Default.aspx
 
-| File           | Component                                  | CDC page                                                                                      | Direct documentation link                                                | Direct data link                                                         |
-| -------------- | ------------------------------------------ | --------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------ | ------------------------------------------------------------------------ |
-| `DEMO_I.XPT`   | Demographics                               | https://wwwn.cdc.gov/nchs/nhanes/search/datapage.aspx?Component=Demographics&Cycle=2015-2016  | https://wwwn.cdc.gov/Nchs/Data/Nhanes/Public/2015/DataFiles/DEMO_I.htm   | https://wwwn.cdc.gov/Nchs/Data/Nhanes/Public/2015/DataFiles/DEMO_I.XPT   |
-| `BMX_I.XPT`    | Body Measures                              | https://wwwn.cdc.gov/nchs/nhanes/search/datapage.aspx?Component=Examination&Cycle=2015-2016   | https://wwwn.cdc.gov/Nchs/Data/Nhanes/Public/2015/DataFiles/BMX_I.htm    | https://wwwn.cdc.gov/Nchs/Data/Nhanes/Public/2015/DataFiles/BMX_I.XPT    |
-| `BPX_I.XPT`    | Blood Pressure                             | https://wwwn.cdc.gov/nchs/nhanes/search/datapage.aspx?Component=Examination&Cycle=2015-2016   | https://wwwn.cdc.gov/Nchs/Data/Nhanes/Public/2015/DataFiles/BPX_I.htm    | https://wwwn.cdc.gov/Nchs/Data/Nhanes/Public/2015/DataFiles/BPX_I.XPT    |
-| `DR1TOT_I.XPT` | Dietary Total Nutrient Intakes, First Day  | https://wwwn.cdc.gov/nchs/nhanes/search/datapage.aspx?Component=Dietary&CycleBeginYear=2015   | https://wwwn.cdc.gov/Nchs/Data/Nhanes/Public/2015/DataFiles/DR1TOT_I.htm | https://wwwn.cdc.gov/Nchs/Data/Nhanes/Public/2015/DataFiles/DR1TOT_I.XPT |
-| `DR2TOT_I.XPT` | Dietary Total Nutrient Intakes, Second Day | https://wwwn.cdc.gov/nchs/nhanes/search/datapage.aspx?Component=Dietary&CycleBeginYear=2015   | https://wwwn.cdc.gov/Nchs/Data/Nhanes/Public/2015/DataFiles/DR2TOT_I.htm | https://wwwn.cdc.gov/Nchs/Data/Nhanes/Public/2015/DataFiles/DR2TOT_I.XPT |
-| `SMQ_I.XPT`    | Smoking Questionnaire                      | https://wwwn.cdc.gov/nchs/nhanes/search/datapage.aspx?Component=Questionnaire&Cycle=2015-2016 | https://wwwn.cdc.gov/Nchs/Data/Nhanes/Public/2015/DataFiles/SMQ_I.htm    | https://wwwn.cdc.gov/Nchs/Data/Nhanes/Public/2015/DataFiles/SMQ_I.XPT    |
+#### NHANES 2001--2002 Source Sample
 
-On each CDC page, click the corresponding `Doc` link for the codebook and the `Data [XPT]` link for the raw data file.
+The repository includes the following files in `data/NHANES/2001/`:
+
+| File in repository | Component                       | CDC page                                                                                         | Documentation                                                            | Data file                                                                |
+| ------------------ | ------------------------------- | ------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------ | ------------------------------------------------------------------------ |
+| `DEMO_B.xpt`       | Demographics                    | https://wwwn.cdc.gov/nchs/nhanes/search/datapage.aspx?Component=Demographics&CycleBeginYear=2001 | https://wwwn.cdc.gov/Nchs/Data/Nhanes/Public/2001/DataFiles/DEMO_B.htm   | https://wwwn.cdc.gov/Nchs/Data/Nhanes/Public/2001/DataFiles/DEMO_B.XPT   |
+| `BMX_B.xpt`        | Body Measures                   | https://wwwn.cdc.gov/nchs/nhanes/search/datapage.aspx?Component=Examination&CycleBeginYear=2001  | https://wwwn.cdc.gov/Nchs/Data/Nhanes/Public/2001/DataFiles/BMX_B.htm    | https://wwwn.cdc.gov/Nchs/Data/Nhanes/Public/2001/DataFiles/BMX_B.XPT    |
+| `BPX_B.xpt`        | Blood Pressure                  | https://wwwn.cdc.gov/nchs/nhanes/search/datapage.aspx?Component=Examination&CycleBeginYear=2001  | https://wwwn.cdc.gov/Nchs/Data/Nhanes/Public/2001/DataFiles/BPX_B.htm    | https://wwwn.cdc.gov/Nchs/Data/Nhanes/Public/2001/DataFiles/BPX_B.XPT    |
+| `DRXTOT_B.xpt`     | Dietary Total Nutrient Intakes  | https://wwwn.cdc.gov/nchs/nhanes/search/datapage.aspx?Component=Dietary&CycleBeginYear=2001      | https://wwwn.cdc.gov/Nchs/Data/Nhanes/Public/2001/DataFiles/DRXTOT_B.htm | https://wwwn.cdc.gov/Nchs/Data/Nhanes/Public/2001/DataFiles/DRXTOT_B.XPT |
+| `PAQ_B.xpt`        | Physical Activity Questionnaire | https://wwwn.cdc.gov/nchs/nhanes/search/datapage.aspx?Component=Questionnaire&Cycle=2001-2002    | https://wwwn.cdc.gov/Nchs/Data/Nhanes/Public/2001/DataFiles/PAQ_B.htm    | https://wwwn.cdc.gov/Nchs/Data/Nhanes/Public/2001/DataFiles/PAQ_B.XPT    |
+| `SMQ_B.xpt`        | Smoking Questionnaire           | https://wwwn.cdc.gov/nchs/nhanes/search/datapage.aspx?Component=Questionnaire&Cycle=2001-2002    | https://wwwn.cdc.gov/Nchs/Data/Nhanes/Public/2001/DataFiles/SMQ_B.htm    | https://wwwn.cdc.gov/Nchs/Data/Nhanes/Public/2001/DataFiles/SMQ_B.XPT    |
+
+#### NHANES 2015--2016 Target Sample
+
+The repository includes the following files in `data/NHANES/2015/`:
+
+| File in repository | Component                                  | CDC page                                                                                      | Documentation                                                            | Data file                                                                |
+| ------------------ | ------------------------------------------ | --------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------ | ------------------------------------------------------------------------ |
+| `DEMO_I.xpt`       | Demographics                               | https://wwwn.cdc.gov/nchs/nhanes/search/datapage.aspx?Component=Demographics&Cycle=2015-2016  | https://wwwn.cdc.gov/Nchs/Data/Nhanes/Public/2015/DataFiles/DEMO_I.htm   | https://wwwn.cdc.gov/Nchs/Data/Nhanes/Public/2015/DataFiles/DEMO_I.XPT   |
+| `BMX_I.xpt`        | Body Measures                              | https://wwwn.cdc.gov/nchs/nhanes/search/datapage.aspx?Component=Examination&Cycle=2015-2016   | https://wwwn.cdc.gov/Nchs/Data/Nhanes/Public/2015/DataFiles/BMX_I.htm    | https://wwwn.cdc.gov/Nchs/Data/Nhanes/Public/2015/DataFiles/BMX_I.XPT    |
+| `BPX_I.xpt`        | Blood Pressure                             | https://wwwn.cdc.gov/nchs/nhanes/search/datapage.aspx?Component=Examination&Cycle=2015-2016   | https://wwwn.cdc.gov/Nchs/Data/Nhanes/Public/2015/DataFiles/BPX_I.htm    | https://wwwn.cdc.gov/Nchs/Data/Nhanes/Public/2015/DataFiles/BPX_I.XPT    |
+| `DR1TOT_I.xpt`     | Dietary Total Nutrient Intakes, First Day  | https://wwwn.cdc.gov/nchs/nhanes/search/datapage.aspx?Component=Dietary&CycleBeginYear=2015   | https://wwwn.cdc.gov/Nchs/Data/Nhanes/Public/2015/DataFiles/DR1TOT_I.htm | https://wwwn.cdc.gov/Nchs/Data/Nhanes/Public/2015/DataFiles/DR1TOT_I.XPT |
+| `DR2TOT_I.xpt`     | Dietary Total Nutrient Intakes, Second Day | https://wwwn.cdc.gov/nchs/nhanes/search/datapage.aspx?Component=Dietary&CycleBeginYear=2015   | https://wwwn.cdc.gov/Nchs/Data/Nhanes/Public/2015/DataFiles/DR2TOT_I.htm | https://wwwn.cdc.gov/Nchs/Data/Nhanes/Public/2015/DataFiles/DR2TOT_I.XPT |
+| `PAQ_I.xpt`        | Physical Activity Questionnaire            | https://wwwn.cdc.gov/nchs/nhanes/search/datapage.aspx?Component=Questionnaire&Cycle=2015-2016 | https://wwwn.cdc.gov/Nchs/Data/Nhanes/Public/2015/DataFiles/PAQ_I.htm    | https://wwwn.cdc.gov/Nchs/Data/Nhanes/Public/2015/DataFiles/PAQ_I.XPT    |
+| `SLQ_I.xpt`        | Sleep Disorders Questionnaire              | https://wwwn.cdc.gov/nchs/nhanes/search/datapage.aspx?Component=Questionnaire&Cycle=2015-2016 | https://wwwn.cdc.gov/Nchs/Data/Nhanes/Public/2015/DataFiles/SLQ_I.htm    | https://wwwn.cdc.gov/Nchs/Data/Nhanes/Public/2015/DataFiles/SLQ_I.XPT    |
+| `SMQ_I.xpt`        | Smoking Questionnaire                      | https://wwwn.cdc.gov/nchs/nhanes/search/datapage.aspx?Component=Questionnaire&Cycle=2015-2016 | https://wwwn.cdc.gov/Nchs/Data/Nhanes/Public/2015/DataFiles/SMQ_I.htm    | https://wwwn.cdc.gov/Nchs/Data/Nhanes/Public/2015/DataFiles/SMQ_I.XPT    |
+
+On each CDC NHANES page, the `Doc` link provides the codebook/documentation and the `Data [XPT]` link provides the raw data file. Users should comply with the NCHS Data User Agreement when using NHANES data.
 
 The NHANES data cleaning scripts are:
 
@@ -188,19 +189,12 @@ The NHANES variables used in the analysis are:
 
 ## Data Redistribution
 
-The repository provides code and instructions for obtaining the raw public datasets from their official sources.
+The repository includes the public-use NHANES XPT files and the 401(k) data file used in the real-data analyses for reproducibility. We also provide official source links and documentation above so that users can obtain the original datasets directly from their official sources.
 
-NHANES public-use data files should be downloaded directly from the CDC NHANES website. Users should comply with the NCHS Data User Agreement:
+For NHANES, users should comply with the NCHS Data User Agreement: https://www.cdc.gov/nchs/policy/data-user-agreement.html
 
-https://www.cdc.gov/nchs/policy/data-user-agreement.html
+For the 401(k) analysis, the data are based on the `pension` dataset from the R package `hdm`. The original dataset can be obtained in R using `data("pension", package = "hdm")`. The corresponding documentation can be accessed by `help("pension", package = "hdm")`.
 
-The 401(k) data can be obtained directly from the R package `hdm` using:
-
-```r
-data("pension", package = "hdm")
-```
-
-Therefore, the repository does not require redistributing raw NHANES XPT files. The real-data analyses are reproducible from the official source files and the provided cleaning scripts.
 
 ## Reproducibility Workflow
 
