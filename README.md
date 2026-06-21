@@ -92,9 +92,6 @@ The subsequent preprocessing, source/target split, and variable selection are im
 
 ### 2. NHANES Dataset
 
-
-### 2. NHANES Dataset
-
 The NHANES analysis uses NHANES 2001--2002 as the source sample and NHANES 2015--2016 as the target sample.
 
 The NHANES public-use XPT files used in the analysis are included in this repository under:
